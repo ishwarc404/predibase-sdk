@@ -1,5 +1,5 @@
 import { axiosInstance } from './networking';
-import  {AxiosRequestConfig} from 'axios';
+import  {AxiosRequestConfig, AxiosError} from 'axios';
 
 
 interface PredibaseClientOptions {
@@ -61,9 +61,12 @@ export class PredibaseClient {
         try {
             const response = await axiosInstance.post(url, data, config); // Use axiosInstance from networking.ts
             return response.data;
-        } catch (error) {
-            // Handle error here
-            throw new Error(`Failed to generate tokens` + error);
+        } catch (error: Error | any) { // More specific type if possible
+            if (error instanceof AxiosError) { // Check for specific error type
+                console.error('Axios error:', error.response?.data);
+            } else {
+                console.error('Unknown error:', error.message);
+            }
         }
     }
 }
